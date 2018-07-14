@@ -1,0 +1,81 @@
+bombs.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+0
+  rotate: false
+  xy: 1, 161
+  size: 86, 92
+  orig: 86, 92
+  offset: 0, 0
+  index: -1
+2
+  rotate: false
+  xy: 259, 170
+  size: 83, 83
+  orig: 83, 83
+  offset: 0, 0
+  index: -1
+3
+  rotate: false
+  xy: 259, 85
+  size: 83, 83
+  orig: 83, 83
+  offset: 0, 0
+  index: -1
+4
+  rotate: false
+  xy: 428, 11
+  size: 79, 83
+  orig: 79, 83
+  offset: 0, 0
+  index: -1
+6
+  rotate: false
+  xy: 344, 170
+  size: 83, 83
+  orig: 83, 83
+  offset: 0, 0
+  index: -1
+7
+  rotate: false
+  xy: 344, 11
+  size: 82, 83
+  orig: 82, 83
+  offset: 0, 0
+  index: -1
+8
+  rotate: false
+  xy: 89, 167
+  size: 83, 86
+  orig: 83, 86
+  offset: 0, 0
+  index: -1
+9
+  rotate: false
+  xy: 89, 79
+  size: 83, 86
+  orig: 83, 86
+  offset: 0, 0
+  index: -1
+10
+  rotate: false
+  xy: 174, 170
+  size: 83, 83
+  orig: 83, 83
+  offset: 0, 0
+  index: -1
+12
+  rotate: false
+  xy: 344, 96
+  size: 93, 72
+  orig: 93, 72
+  offset: 0, 0
+  index: -1
+13
+  rotate: false
+  xy: 1, 1
+  size: 89, 73
+  orig: 89, 73
+  offset: 0, 0
+  index: -1
