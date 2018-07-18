@@ -13,14 +13,16 @@ import static java.time.temporal.ChronoUnit.*;
 
 public class RemainingTimeService {
 
-    private final static LocalTime END_OF_WORK = LocalTime.of(16, 0, 0);
-    private final static LocalTime START_OF_WORK = LocalTime.of(7, 23, 0);
     private Properties properties;
     private List<LocalDate> holidays;
+    private LocalTime startOfWork;
+    private LocalTime endOfWork;
 
     public RemainingTimeService(Properties properties) {
         this.properties = properties;
         holidays = new Holidays().getHolidays();
+        this.startOfWork = properties.getStartOfWork();
+        this.endOfWork = properties.getEndOfWork();
     }
 
     public boolean validateDate(LocalDate currentDate, String selectedYear, String selectedMonth, String selectedDay) {
@@ -37,19 +39,19 @@ public class RemainingTimeService {
         long todayWorkingHours = 0;
         long todayWorkingMinutes = 0;
         long todayWorkingSeconds = 0;
-        if (localTime.isBefore(END_OF_WORK)) {
-            if(localTime.isAfter(START_OF_WORK)){
-                todayWorkingHours = HOURS.between(localTime, END_OF_WORK);
-                todayWorkingMinutes = MINUTES.between(localTime, END_OF_WORK);
-                todayWorkingSeconds = SECONDS.between(localTime, END_OF_WORK);
+        if (localTime.isBefore(endOfWork)) {
+            if(localTime.isAfter(startOfWork)){
+                todayWorkingHours = HOURS.between(localTime, endOfWork);
+                todayWorkingMinutes = MINUTES.between(localTime, endOfWork);
+                todayWorkingSeconds = SECONDS.between(localTime, endOfWork);
             }else{
-                todayWorkingHours = HOURS.between(START_OF_WORK, END_OF_WORK);
-                todayWorkingMinutes = MINUTES.between(START_OF_WORK, END_OF_WORK);
-                todayWorkingSeconds = SECONDS.between(START_OF_WORK, END_OF_WORK);
+                todayWorkingHours = HOURS.between(startOfWork, endOfWork);
+                todayWorkingMinutes = MINUTES.between(startOfWork, endOfWork);
+                todayWorkingSeconds = SECONDS.between(startOfWork, endOfWork);
             }
 
         }
-        if ((localTime.isBefore(END_OF_WORK) && localTime.isAfter(START_OF_WORK))) {
+        if ((localTime.isBefore(endOfWork) && localTime.isAfter(startOfWork) && isNotWeekend(currentDate))) {
             properties.setWorkingHours(true);
         } else {
             properties.setWorkingHours(false);
@@ -68,6 +70,33 @@ public class RemainingTimeService {
         return LocalDate.of(year, month, days);
     }
 
+    private long countWorkingDaysBetween(LocalDate currentDate, LocalDate chosenDate) {
+        int dayCounter = 0;
+        currentDate = currentDate.plusDays(1);
+        while (currentDate.isBefore(chosenDate)) {
+            if (isNotWeekend(currentDate) && isNotHoliday(currentDate)) {
+                dayCounter++;
+            }
+            currentDate = currentDate.plusDays(1);
+        }
+        return dayCounter;
+    }
+
+    private boolean isNotWeekend(LocalDate currentDate) {
+        return !(currentDate.getDayOfWeek().equals(SATURDAY) || currentDate.getDayOfWeek().equals(SUNDAY));
+    }
+
+    private boolean isNotHoliday(LocalDate currentDate) {
+        for (LocalDate holiday : holidays) {
+            if (currentDate.isEqual(holiday)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    //getters & setters
     public long getRemainingWorkingDays() {
         return properties.getRemainingWorkingDays();
     }
@@ -100,32 +129,15 @@ public class RemainingTimeService {
         this.properties.setHowOftenBombBlow(ExplosionTimes.findByName(howOftenBombBlow).getExplosionTimeInSecond());
     }
 
-    private long countWorkingDaysBetween(LocalDate currentDate, LocalDate chosenDate) {
-        int dayCounter = 0;
-        currentDate = currentDate.plusDays(1);
-        while (currentDate.isBefore(chosenDate)) {
-            if (isNotWeekend(currentDate) && isNotHoliday(currentDate)) {
-                dayCounter++;
-            }
-            currentDate = currentDate.plusDays(1);
-        }
-        return dayCounter;
-    }
-
-    private boolean isNotWeekend(LocalDate currentDate) {
-        return !(currentDate.getDayOfWeek().equals(SATURDAY) || currentDate.getDayOfWeek().equals(SUNDAY));
-    }
-
-    private boolean isNotHoliday(LocalDate currentDate) {
-        for (LocalDate holiday : holidays) {
-            if (currentDate.isEqual(holiday)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     private int getMonthNumber(String monthName) {
         return Month.valueOf(monthName.toUpperCase()).getValue();
+    }
+
+    public LocalTime getStartOfWork() {
+        return startOfWork;
+    }
+
+    public LocalTime getEndOfWork() {
+        return endOfWork;
     }
 }

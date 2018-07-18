@@ -6,6 +6,10 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import pl.alkosoft.odliczaczor.Odliczaczor;
 
+import static pl.alkosoft.odliczaczor.data.Assets.CHICKEN_EXPLODE_SFX;
+import static pl.alkosoft.odliczaczor.entity.BombStates.EXPLODED;
+import static pl.alkosoft.odliczaczor.entity.BombStates.READY_TO_EXPLODE;
+
 public class BombsManager {
 
     private Array<Bomb> bombs;
@@ -22,7 +26,7 @@ public class BombsManager {
         this.bombSafetySwitch = 1;
         this.bombsExplosionTimer = app.getRemainingTimeService().getHowOftenBombBlow();
         this.bombsExplosionCounter = 0;
-        this.chickenExplodeSound = app.assetManager.get("sfx/chicken_explode.mp3");
+        this.chickenExplodeSound = app.getMusicManager().getChickenExplodeSfx();
         initBombs(amount);
 
     }
@@ -38,11 +42,11 @@ public class BombsManager {
                 counterX = 0;
                 counterY++;
             }
-            addEntity(new Bomb(app.assetManager, new Vector2(800 + counterX * 100, 890 - counterY * 100)));
+            addEntity(new Bomb(app.getAssetManager(), new Vector2(800 + counterX * 100, 890 - counterY * 100)));
             counterX++;
         }
         if (bombs.size > 0) {
-            bombs.get(0).setState("readyToExplode");
+            bombs.get(0).setState(READY_TO_EXPLODE);
         }
     }
 
@@ -50,34 +54,36 @@ public class BombsManager {
         for (Entity bomb : bombs) {
             bomb.update();
         }
-
     }
 
     public void render(SpriteBatch sb, float timePassed) {
         int timePassedInSeconds = (int) timePassed % bombsExplosionTimer;
-            if (timePassedInSeconds == 0 && timePassedInSeconds == bombSafetySwitch && bombsExplosionCounter < bombs.size) {
-                chickenExplodeSound.setVolume(0.3f);
-                chickenExplodeSound.play();
-                bombs.get(bombsExplosionCounter).setState("exploded");
-                bombsExplosionCounter++;
-                if(bombsExplosionCounter < bombs.size){
-                    bombs.get(bombsExplosionCounter).setState("readyToExplode");
-                }
-                bombSafetySwitch=1;
+        if (bombShouldBlow(timePassedInSeconds)) {
+            chickenExplodeSound.setVolume(0.2f);
+            chickenExplodeSound.play();
+            bombs.get(bombsExplosionCounter).setState(EXPLODED);
+            bombsExplosionCounter++;
+            if (bombsExplosionCounter < bombs.size) {
+                bombs.get(bombsExplosionCounter).setState(READY_TO_EXPLODE);
             }
-            if(timePassedInSeconds==1){
-                bombSafetySwitch=0;
-            }
+            bombSafetySwitch = 1;
+        }
+        if (timePassedInSeconds == 1) {
+            bombSafetySwitch = 0;
+        }
 
         for (Entity bomb : bombs) {
             bomb.render(sb);
         }
     }
 
-    public boolean isAnyBombLeft() {
+    private boolean bombShouldBlow(int timePassedInSeconds) {
+        return timePassedInSeconds == 0 && timePassedInSeconds == bombSafetySwitch && bombsExplosionCounter < bombs.size;
+    }
 
+    public boolean isAnyBombLeft() {
         for (Bomb bomb : bombs) {
-            if (bomb.getState() != "exploded") {
+            if (bomb.getState() != EXPLODED) {
                 return true;
             }
         }

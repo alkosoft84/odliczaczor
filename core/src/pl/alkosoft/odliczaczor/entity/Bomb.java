@@ -7,16 +7,12 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
-import static pl.alkosoft.odliczaczor.data.Textures.BOMB_EXPLOSION_TEXTURE_ATLAS;
-import static pl.alkosoft.odliczaczor.data.Textures.BOMB_TEXTURE_ATLAS;
-import static pl.alkosoft.odliczaczor.data.Textures.EXPLOSION_TEXTURE_ATLAS;
+import static pl.alkosoft.odliczaczor.data.Assets.*;
+import static pl.alkosoft.odliczaczor.entity.BombStates.*;
 
 public class Bomb implements Entity {
 
     private AssetManager assetManager;
-    private TextureAtlas bombTA;
-    private TextureAtlas bombReadyToExplodeTA;
-    private TextureAtlas explosionTA;
     private Vector2 position;
     private Animation<TextureRegion> bombAnimation;
     private Animation<TextureRegion> bombReadyToExplode;
@@ -25,21 +21,21 @@ public class Bomb implements Entity {
     private float explosionRuntime;
     private float bombReadyToExplodeRuntime;
 
-    private String bombState;
+    private BombStates bombState;
 
     public Bomb(AssetManager assetManager, Vector2 position) {
         this.assetManager = assetManager;
-        this.bombTA = assetManager.get(BOMB_TEXTURE_ATLAS.getUrl());
-        this.bombReadyToExplodeTA = assetManager.get(BOMB_EXPLOSION_TEXTURE_ATLAS.getUrl());
-        this.explosionTA = assetManager.get(EXPLOSION_TEXTURE_ATLAS.getUrl());
+        TextureAtlas bombTA = this.assetManager.get(BOMBS_PACK.getPath());
+        TextureAtlas bombReadyToExplodeTA = assetManager.get(BOMB_EXPLODING_PACK.getPath());
+        TextureAtlas explosionTA = assetManager.get(EXPLOSION_PACK.getPath());
         this.position = position;
-        this.bombState="normal";
-        this.bombRuntime=0f;
-        this.bombReadyToExplodeRuntime=0f;
-        this.explosionRuntime=0f;
-        this.bombAnimation = new Animation<>(2f, this.bombTA.getRegions());
-        this.bombReadyToExplode = new Animation<>(2f, this.bombReadyToExplodeTA.getRegions());
-        this.explosionAnimation = new Animation<>(2f, this.explosionTA.getRegions());
+        this.bombState = NORMAL;
+        this.bombRuntime = 0f;
+        this.bombReadyToExplodeRuntime = 0f;
+        this.explosionRuntime = 0f;
+        this.bombAnimation = new Animation<>(2f, bombTA.getRegions());
+        this.bombReadyToExplode = new Animation<>(2f, bombReadyToExplodeTA.getRegions());
+        this.explosionAnimation = new Animation<>(2f, explosionTA.getRegions());
     }
 
     @Override
@@ -47,29 +43,27 @@ public class Bomb implements Entity {
     }
 
     @Override
-    public void render(SpriteBatch sb){
-        if(this.bombState.equals("normal")) {
+    public void render(SpriteBatch sb) {
+        if (this.bombState.equals(NORMAL)) {
             sb.draw(bombAnimation.getKeyFrame(this.bombRuntime, true), position.x, position.y);
             this.bombRuntime += 0.2;
-        }
-        else if(this.bombState.equals("readyToExplode")){
-                sb.draw(bombReadyToExplode.getKeyFrame( this.bombReadyToExplodeRuntime, true), position.x, position.y);
-                this.bombReadyToExplodeRuntime+=0.2;
-        }
-        else if(this.bombState.equals("exploded")){
+        } else if (this.bombState.equals(READY_TO_EXPLODE)) {
+            sb.draw(bombReadyToExplode.getKeyFrame(this.bombReadyToExplodeRuntime, true), position.x, position.y);
+            this.bombReadyToExplodeRuntime += 0.2;
+        } else if (this.bombState.equals(EXPLODED)) {
             sb.draw(explosionAnimation.getKeyFrame(this.explosionRuntime), position.x, position.y);
-            this.explosionRuntime+=0.3;
+            this.explosionRuntime += 0.3;
         }
 
     }
 
     @Override
-    public void setState(String state) {
-        this.bombState=state;
+    public void setState(BombStates state) {
+        this.bombState = state;
     }
 
     @Override
-    public String getState() {
+    public BombStates getState() {
         return this.bombState;
     }
 }

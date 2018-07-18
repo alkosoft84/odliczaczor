@@ -2,30 +2,24 @@ package pl.alkosoft.odliczaczor.screen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.viewport.StretchViewport;
 import pl.alkosoft.odliczaczor.Odliczaczor;
 
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
 import static pl.alkosoft.odliczaczor.Odliczaczor.HEIGHT;
-import static pl.alkosoft.odliczaczor.Odliczaczor.WIDTH;
+import static pl.alkosoft.odliczaczor.data.Assets.APP_BACKGROUND;
+import static pl.alkosoft.odliczaczor.data.Assets.SPLASH_SCREEN_LOGO;
 import static pl.alkosoft.odliczaczor.screen.Screens.PREPARE_SCREEN;
 
 class MenuScreen implements Screen {
 
     private final Odliczaczor app;
     private Stage stage;
-    private Skin skin;
-    private Image menuBackground;
-    private Image logo;
 
     private TextButton buttonStart, buttonExit, buttonMute;
 
@@ -35,38 +29,25 @@ class MenuScreen implements Screen {
 
     @Override
     public void show() {
-        this.stage = new Stage(new StretchViewport(WIDTH, HEIGHT, app.camera));
-        app.menuThemeSong = app.assetManager.get("sfx/reunion.mp3");
-        Texture menuBackgroundTexture = app.assetManager.get("gdx/app_background.jpg");
-        Texture splashLogoTexture = app.assetManager.get("gdx/splash_logo.png");
+        this.stage = new Stage();
         Gdx.input.setInputProcessor(stage);
-        if(!app.menuThemeSong.isPlaying() && (buttonMute ==null)){
-            app.menuThemeSong.setVolume(.3f);
-            app.menuThemeSong.play();
-            app.menuThemeSong.setLooping(true);
-        }
-        if(skin==null){
-            prepareSkin();
-        }
-        if(buttonMute==null){
-            initButtons();
+        if (!app.getMusicManager().getMenuThemeSong().isPlaying()) {
+            app.getMusicManager().getMenuThemeSong().setVolume(.3f);
+            app.getMusicManager().getMenuThemeSong().play();
+            app.getMusicManager().getMenuThemeSong().setLooping(true);
         }
 
-        menuBackground = new Image(menuBackgroundTexture);
-        logo = new Image(splashLogoTexture);
-        stage.addActor(menuBackground);
-        stage.addActor(logo);
-
-        menuBackground.setPosition(0, 0);
+        Image menuBackground = app.getScreenHelper().createImageActor(APP_BACKGROUND.getPath(), 0, 0);
+        Image logo = app.getScreenHelper().createImageActor(SPLASH_SCREEN_LOGO.getPath(), -1, 800);
         logo.setWidth(1200);
         logo.setHeight(120);
-        logo.setPosition(WIDTH / 2 - logo.getWidth() / 2, 800);
 
-        buttonStart.addAction(sequence(alpha(0f), fadeIn(1.5f)));
+        initButtons();
+
+        stage.addActor(menuBackground);
+        stage.addActor(logo);
         stage.addActor(buttonStart);
-        buttonMute.addAction(sequence(alpha(0f), fadeIn(1.5f)));
         stage.addActor(buttonMute);
-        buttonExit.addAction(sequence(alpha(0f), fadeIn(1.5f)));
         stage.addActor(buttonExit);
     }
 
@@ -74,16 +55,8 @@ class MenuScreen implements Screen {
     public void render(float delta) {
         Gdx.gl.glClearColor(0f, 0f, 0f, 0f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        update(delta);
-        stage.draw();
-    }
-
-    private void update(float delta) {
         stage.act(delta);
-    }
-
-    private void prepareSkin() {
-        this.skin = app.assetManager.get("ui/uiskin.json", Skin.class);
+        stage.draw();
     }
 
     private void initButtons() {
@@ -93,50 +66,53 @@ class MenuScreen implements Screen {
     }
 
     private void createStartButton() {
-        buttonStart = new TextButton("Start", skin, "default");
-        buttonStart.setColor(.44f, .41f, .41f, 1f);
-        buttonStart.setSize(400, 100);
-        buttonStart.setPosition(WIDTH / 2 - buttonStart.getWidth() / 2, HEIGHT / 2 + 100);
+        buttonStart = app.getScreenHelper().createDefaultButton("Start", app.getButtonDefaultColor(), app.getSkin(), 400, 100, -1, HEIGHT / 2 + 100);
         buttonStart.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                app.setScreen(app.screenManager.getScreen(PREPARE_SCREEN));
+                app.setScreen(app.getScreenManager().getScreen(PREPARE_SCREEN));
             }
         });
+        buttonStart.addAction(sequence(alpha(0f), fadeIn(1.5f)));
     }
 
     private void createMuteButton() {
-        buttonMute = new TextButton("Music: ON", skin, "default");
-        buttonMute.setColor(.44f, .41f, .41f, 1f);
-        buttonMute.setSize(400, 100);
-        buttonMute.setPosition(WIDTH / 2 - buttonMute.getWidth() / 2, HEIGHT / 2 - 50);
+        buttonMute = app.getScreenHelper().createDefaultButton("Music: ON", app.getButtonDefaultColor(), app.getSkin(), 400, 100, -1, HEIGHT / 2 - 50);
         buttonMute.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if (app.menuThemeSong.isPlaying()) {
-                    app.menuThemeSong.pause();
-                    buttonMute.setStyle(buttonMute.getSkin().get("toggle", TextButton.TextButtonStyle.class));
-                    buttonMute.setText("Music: OFF");
-                } else {
-                    app.menuThemeSong.play();
-                    buttonMute.setStyle(buttonMute.getSkin().get("default", TextButton.TextButtonStyle.class));
-                    buttonMute.setText("Music: ON");
-                }
+                handleMuteToggle();
             }
         });
+        buttonMute.addAction(sequence(alpha(0f), fadeIn(1.5f)));
     }
 
     private void createExitButton() {
-        buttonExit = new TextButton("Exit", skin, "default");
-        buttonExit.setColor(.44f, .41f, .41f, 1f);
-        buttonExit.setSize(400, 100);
-        buttonExit.setPosition(WIDTH / 2 - buttonExit.getWidth() / 2, HEIGHT / 2 - 200);
+        buttonExit = app.getScreenHelper().createDefaultButton("Exit", app.getButtonDefaultColor(), app.getSkin(), 400, 100, -1, HEIGHT / 2 - 200);
         buttonExit.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.exit();
             }
         });
+        buttonExit.addAction(sequence(alpha(0f), fadeIn(1.5f)));
+    }
+
+    private void handleMuteToggle() {
+        if (app.getMusicManager().getMenuThemeSong().isPlaying()) {
+            app.getMusicManager().getMenuThemeSong().pause();
+            buttonMute.setStyle(buttonMute.getSkin().get("toggle", TextButton.TextButtonStyle.class));
+            buttonMute.setText("Music: OFF");
+        } else {
+            app.getMusicManager().getMenuThemeSong().play();
+            buttonMute.setStyle(buttonMute.getSkin().get("default", TextButton.TextButtonStyle.class));
+            buttonMute.setText("Music: ON");
+        }
+    }
+
+    @Override
+    public void dispose() {
+        stage.dispose();
     }
 
     @Override
@@ -145,23 +121,14 @@ class MenuScreen implements Screen {
 
     @Override
     public void pause() {
-
     }
 
     @Override
     public void resume() {
-
     }
 
     @Override
     public void hide() {
-
-    }
-
-    @Override
-    public void dispose() {
-        stage.dispose();
-        skin.dispose();
     }
 
 }

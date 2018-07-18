@@ -1,7 +1,11 @@
 package pl.alkosoft.odliczaczor.data;
 
+import java.time.LocalTime;
+
 public class Properties {
 
+    private final LocalTime endOfWork;
+    private final LocalTime startOfWork;
     private long remainingWorkingDays;
     private long remainingWorkingHours;
     private long remainingWorkingMinutes;
@@ -10,6 +14,11 @@ public class Properties {
     private boolean workingHours;
 
     private int howOftenBombBlow;
+
+    public Properties() {
+        this.startOfWork = LocalTime.of(8, 0, 0);
+        this.endOfWork = LocalTime.of(17, 0, 0);
+    }
 
     public boolean isWorkingHours() {
         return workingHours;
@@ -57,5 +66,13 @@ public class Properties {
 
     public void setHowOftenBombBlow(int howOftenBombBlow) {
         this.howOftenBombBlow = howOftenBombBlow;
+    }
+
+    public  LocalTime getStartOfWork() {
+        return this.startOfWork;
+    }
+
+    public LocalTime getEndOfWork() {
+        return this.endOfWork;
     }
 }

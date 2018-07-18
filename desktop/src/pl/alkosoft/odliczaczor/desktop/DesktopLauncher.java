@@ -16,8 +16,8 @@ public class DesktopLauncher {
 		config.backgroundFPS = 60;
 		config.foregroundFPS = 60;
 		config.resizable = false;
-		config.fullscreen = true;
-		config.vSyncEnabled = true;
+		//config.fullscreen = true;
+		//config.vSyncEnabled = true;
 		new LwjglApplication(new Odliczaczor(), config);
 	}
 }
