@@ -38,7 +38,7 @@ class FinishScreen implements Screen {
         this.stage = new Stage();
         Gdx.input.setInputProcessor(stage);
 
-        if(!app.getMusicManager().getFinishThemeSong().isPlaying()){
+        if(!app.getMusicManager().getFinishThemeSong().isPlaying() && !app.getMusicManager().isMuteOn()){
             app.getMusicManager().getFinishThemeSong().play();
             app.getMusicManager().getFinishThemeSong().setLooping(true);
         }

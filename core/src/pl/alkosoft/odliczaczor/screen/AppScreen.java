@@ -62,7 +62,7 @@ class AppScreen implements Screen {
         bombTimer = 0;
         timer = 0;
 
-        if (!app.getMusicManager().getAppThemeSong().isPlaying()) {
+        if (!app.getMusicManager().getAppThemeSong().isPlaying() && !app.getMusicManager().isMuteOn()) {
             app.getMusicManager().getAppThemeSong().setVolume(.3f);
             app.getMusicManager().getAppThemeSong().play();
             app.getMusicManager().getAppThemeSong().setLooping(true);

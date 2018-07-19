@@ -30,8 +30,11 @@ class MenuScreen implements Screen {
     @Override
     public void show() {
         this.stage = new Stage();
+        buttonStart = null;
+        buttonMute = null;
+        buttonExit = null;
         Gdx.input.setInputProcessor(stage);
-        if (!app.getMusicManager().getMenuThemeSong().isPlaying()) {
+        if (!app.getMusicManager().getMenuThemeSong().isPlaying() && !app.getMusicManager().isMuteOn()) {
             app.getMusicManager().getMenuThemeSong().setVolume(.3f);
             app.getMusicManager().getMenuThemeSong().play();
             app.getMusicManager().getMenuThemeSong().setLooping(true);
@@ -77,7 +80,14 @@ class MenuScreen implements Screen {
     }
 
     private void createMuteButton() {
-        buttonMute = app.getScreenHelper().createDefaultButton("Music: ON", app.getButtonDefaultColor(), app.getSkin(), 400, 100, -1, HEIGHT / 2 - 50);
+        String name = "Music: ON";
+        String style = "default";
+        if (app.getMusicManager().isMuteOn()){
+            name = "Music: OFF";
+            style = "toggle";
+        }
+        buttonMute = app.getScreenHelper().createDefaultButton(name, app.getButtonDefaultColor(), app.getSkin(), 400, 100, -1, HEIGHT / 2 - 50);
+        buttonMute.setStyle(buttonMute.getSkin().get(style, TextButton.TextButtonStyle.class));
         buttonMute.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -99,14 +109,16 @@ class MenuScreen implements Screen {
     }
 
     private void handleMuteToggle() {
-        if (app.getMusicManager().getMenuThemeSong().isPlaying()) {
+        if (!app.getMusicManager().isMuteOn()) {
             app.getMusicManager().getMenuThemeSong().pause();
             buttonMute.setStyle(buttonMute.getSkin().get("toggle", TextButton.TextButtonStyle.class));
             buttonMute.setText("Music: OFF");
+            app.getMusicManager().setMuteOn(true);
         } else {
             app.getMusicManager().getMenuThemeSong().play();
             buttonMute.setStyle(buttonMute.getSkin().get("default", TextButton.TextButtonStyle.class));
             buttonMute.setText("Music: ON");
+            app.getMusicManager().setMuteOn(false);
         }
     }
 

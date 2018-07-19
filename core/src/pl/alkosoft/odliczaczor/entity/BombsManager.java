@@ -59,8 +59,10 @@ public class BombsManager {
     public void render(SpriteBatch sb, float timePassed) {
         int timePassedInSeconds = (int) timePassed % bombsExplosionTimer;
         if (bombShouldBlow(timePassedInSeconds)) {
-            chickenExplodeSound.setVolume(0.2f);
-            chickenExplodeSound.play();
+            if (!app.getMusicManager().isMuteOn()){
+                chickenExplodeSound.setVolume(0.2f);
+                chickenExplodeSound.play();
+            }
             bombs.get(bombsExplosionCounter).setState(EXPLODED);
             bombsExplosionCounter++;
             if (bombsExplosionCounter < bombs.size) {

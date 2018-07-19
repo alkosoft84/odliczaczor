@@ -112,7 +112,7 @@ class PrepareScreen implements Screen {
     }
 
     private void createStartButton() {
-        buttonStart = app.getScreenHelper().createDefaultButton("Start", app.getButtonDefaultColor(), app.getSkin(), 300, 100, 1180, 80);
+        buttonStart = app.getScreenHelper().createDefaultButton("Start", app.getButtonDefaultColor(), app.getSkin(),300, 100, 1180, 80);
         buttonStart.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {

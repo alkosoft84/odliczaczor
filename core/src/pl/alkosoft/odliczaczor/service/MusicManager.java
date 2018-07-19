@@ -11,12 +11,14 @@ public class MusicManager {
     private Music finishThemeSong;
     private Music appThemeSong;
     private Music chickenExplodeSfx;
+    private boolean muteOn;
 
     public void init(Odliczaczor app){
         this.menuThemeSong = app.getAssetManager().get(MENU_THEME_SONG.getPath());
         this.appThemeSong = app.getAssetManager().get(APP_THEME_SONG.getPath());
         this.chickenExplodeSfx = app.getAssetManager().get(CHICKEN_EXPLODE_SFX.getPath());
         this.finishThemeSong = app.getAssetManager().get(FINISH_SCREEN_THEME_SONG.getPath());
+        this.muteOn=false;
     }
 
     public Music getMenuThemeSong() {
@@ -33,5 +35,13 @@ public class MusicManager {
 
     public Music getChickenExplodeSfx() {
         return chickenExplodeSfx;
+    }
+
+    public boolean isMuteOn() {
+        return muteOn;
+    }
+
+    public void setMuteOn(boolean muteOn) {
+        this.muteOn = muteOn;
     }
 }
