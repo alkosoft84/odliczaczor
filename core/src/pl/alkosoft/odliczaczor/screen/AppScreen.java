@@ -130,6 +130,7 @@ class AppScreen implements Screen {
         }
 
         handleBombDrawing();
+        checkFinishAppCondition();
     }
 
     private void drawBombs() {
@@ -142,15 +143,19 @@ class AppScreen implements Screen {
         if (!bombsManager.isAnyBombLeft()) {
             if ((remaininingWorkingSeconds / howOftenBombBlow) > 0) {
                 bombsManager = new BombsManager(app, (int) (remaininingWorkingSeconds / howOftenBombBlow));
-            } else {
-                app.getMusicManager().getAppThemeSong().stop();
-                stage.addAction(sequence(delay(1.5f), run(() -> app.setScreen(app.getScreenManager().getScreen(FINISH_SCREEN)))));
             }
         }
     }
 
+    private void checkFinishAppCondition() {
+        if(remaininingWorkingSeconds<=0 && !bombsManager.isAnyBombLeft()){
+            app.getMusicManager().getAppThemeSong().stop();
+            stage.addAction(sequence(delay(1.5f), run(() -> app.setScreen(app.getScreenManager().getScreen(FINISH_SCREEN)))));
+        }
+    }
+
     private void handleRemainingWorkingHours() {
-        if (remaininingWorkingMinutes % 60 == 0 && timer > 1) {
+        if (remaininingWorkingMinutes % 60 == 0 && remaininingWorkingMinutes != 0 && timer > 1) {
             remaininingWorkingHours--;
             Label lbl = stage.getRoot().findActor("hoursLbl");
             lbl.setText("Working hours: " + remaininingWorkingHours);
@@ -194,7 +199,8 @@ class AppScreen implements Screen {
     private boolean nowAreWorkingHours(LocalTime localTime, LocalDate localtDate) {
         return localTime.isBefore(app.getRemainingTimeService().getEndOfWork()) &&
                 localTime.isAfter(app.getRemainingTimeService().getStartOfWork()) &&
-                !(localtDate.getDayOfWeek().equals(SATURDAY) || localtDate.getDayOfWeek().equals(SUNDAY));
+                !(localtDate.getDayOfWeek().equals(SATURDAY) || localtDate.getDayOfWeek().equals(SUNDAY)) &&
+                remaininingWorkingSeconds>0;
     }
 
     private void drawLabel(String value, String name, BitmapFont font, int x, int y, Color color, Action action) {

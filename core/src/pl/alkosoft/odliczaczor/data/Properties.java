@@ -17,7 +17,7 @@ public class Properties {
 
     public Properties() {
         this.startOfWork = LocalTime.of(8, 0, 0);
-        this.endOfWork = LocalTime.of(17, 0, 0);
+        this.endOfWork = LocalTime.of(16, 0, 0);
     }
 
     public boolean isWorkingHours() {

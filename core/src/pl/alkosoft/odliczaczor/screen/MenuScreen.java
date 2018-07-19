@@ -12,6 +12,7 @@ import pl.alkosoft.odliczaczor.Odliczaczor;
 
 import static com.badlogic.gdx.scenes.scene2d.actions.Actions.*;
 import static pl.alkosoft.odliczaczor.Odliczaczor.HEIGHT;
+import static pl.alkosoft.odliczaczor.Odliczaczor.WIDTH;
 import static pl.alkosoft.odliczaczor.data.Assets.APP_BACKGROUND;
 import static pl.alkosoft.odliczaczor.data.Assets.SPLASH_SCREEN_LOGO;
 import static pl.alkosoft.odliczaczor.screen.Screens.PREPARE_SCREEN;
@@ -41,7 +42,7 @@ class MenuScreen implements Screen {
         }
 
         Image menuBackground = app.getScreenHelper().createImageActor(APP_BACKGROUND.getPath(), 0, 0);
-        Image logo = app.getScreenHelper().createImageActor(SPLASH_SCREEN_LOGO.getPath(), -1, 800);
+        Image logo = app.getScreenHelper().createImageActor(SPLASH_SCREEN_LOGO.getPath(), WIDTH/2 - 600, 800);
         logo.setWidth(1200);
         logo.setHeight(120);
 
