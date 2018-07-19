@@ -117,7 +117,7 @@ class AppScreen implements Screen {
         update(delta);
         stage.draw();
 
-        handleWorkingHours();
+        checkFinishAppCondition();
 
         if (isWorkingHours) {
             assignCaptionToWorkingHourLabel("");
@@ -129,8 +129,8 @@ class AppScreen implements Screen {
             assignCaptionToWorkingHourLabel("...waiting for 8:00AM to countdown...");
         }
 
+        handleWorkingHours();
         handleBombDrawing();
-        checkFinishAppCondition();
     }
 
     private void drawBombs() {
@@ -148,7 +148,9 @@ class AppScreen implements Screen {
     }
 
     private void checkFinishAppCondition() {
-        if(remaininingWorkingSeconds<=0 && !bombsManager.isAnyBombLeft()){
+        if(remaininingWorkingSeconds<=1 && !bombsManager.isAnyBombLeft()){
+            Label lbl = stage.getRoot().findActor("secondsLbl");
+            lbl.setText("Working seconds: 0");
             app.getMusicManager().getAppThemeSong().stop();
             stage.addAction(sequence(delay(1.5f), run(() -> app.setScreen(app.getScreenManager().getScreen(FINISH_SCREEN)))));
         }
@@ -200,7 +202,7 @@ class AppScreen implements Screen {
         return localTime.isBefore(app.getRemainingTimeService().getEndOfWork()) &&
                 localTime.isAfter(app.getRemainingTimeService().getStartOfWork()) &&
                 !(localtDate.getDayOfWeek().equals(SATURDAY) || localtDate.getDayOfWeek().equals(SUNDAY)) &&
-                remaininingWorkingSeconds>0;
+                remaininingWorkingSeconds>-1;
     }
 
     private void drawLabel(String value, String name, BitmapFont font, int x, int y, Color color, Action action) {
